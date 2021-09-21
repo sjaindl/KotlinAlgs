@@ -1,0 +1,5 @@
+/Users/jaiste/Code/KotlinAlgs/src/main/kotlin/kt/kotlinalgs/app/linkedlist/DoublyLinkedList.kt
+/Users/jaiste/Code/KotlinAlgs/src/main/kotlin/kt/kotlinalgs/app/linkedlist/SingleLinkedList.kt
+/Users/jaiste/Code/KotlinAlgs/src/main/kotlin/kt/kotlinalgs/app/linkedlist/partition.ws.kts
+/Users/jaiste/Code/KotlinAlgs/src/main/kotlin/kt/kotlinalgs/app/AppKt.kt
+/Users/jaiste/Code/KotlinAlgs/src/main/kotlin/kt/kotlinalgs/app/stack/Stack.kt

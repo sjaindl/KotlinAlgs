@@ -9,7 +9,8 @@
             "request": "launch",
             "name": "Kotlin Launch",
             "projectRoot": "${workspaceFolder}",
-            "mainClass": "path.to.your.MainClassKt"
+            "mainClass": "kt/kotlinalgs/app/AppKt",
+            "preLaunchTask": "build"
         }
     ]
 }

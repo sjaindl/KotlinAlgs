@@ -1,4 +1,6 @@
-data class DoublyLinkedList<T>(
+package kt.kotlinalgs.app.linkedlist
+
+class DoublyLinkedList<T>(
     var root: DoublyNode<T>? = null,
     var tail: DoublyNode<T>? = null
 ) {
@@ -16,7 +18,7 @@ data class DoublyLinkedList<T>(
 
     fun remove(node: DoublyNode<T>) {
         if (root == null) return
-        
+
         if (root == node) {
             if (root == tail) {
                 root = null
@@ -47,7 +49,7 @@ data class DoublyNode<T>(
     var next: DoublyNode<T>? = null
 )
 
-fun main(args: Array<String>){
+fun main() {
     println("DoublyLinkedList")
     val list = DoublyLinkedList<Int>()
     val node2 = DoublyNode(2)

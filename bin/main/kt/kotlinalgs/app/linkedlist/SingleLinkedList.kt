@@ -1,4 +1,6 @@
-data class SingleLinkedList<T>(
+package kt.kotlinalgs.app.linkedlist
+
+public class SingleLinkedList<T>(
     var root: SingleNode<T>? = null,
     var tail: SingleNode<T>? = null
 ) {
@@ -11,9 +13,19 @@ data class SingleLinkedList<T>(
             tail = node
         }
     }
+    
+    fun addFront(node: SingleNode<T>) {
+        if (root == null) {
+            root = node
+            tail = node
+        } else {
+            node.next = root
+            root = node
+        }
+    }
 
     fun remove(node: SingleNode<T>) {
-        if (root == null) return
+        if (root == null) throw RuntimeException("No element in stack")
         
         if (node == root) {
             if (root == tail) {
@@ -36,6 +48,15 @@ data class SingleLinkedList<T>(
             }
         }
     }
+
+    fun removeFirst(): SingleNode<T> {
+        val node = root ?: throw RuntimeException("No element in stack")
+
+        root = root?.next
+        if (root == null) tail = null
+
+        return node
+    }
     
     fun predecessor(node: SingleNode<T>) : SingleNode<T>? {
         var curNode = root
@@ -55,8 +76,8 @@ data class SingleNode<T>(
     var next: SingleNode<T>? = null
 )
 
-fun main(args: Array<String>){
-    println("Hello Kotlin Native on my MacOS X")
+fun main(){
+    println("SingleLinkedList")
     val singleList = SingleLinkedList<Int>()
     val node2 = SingleNode(2)
     singleList.add(SingleNode(1))

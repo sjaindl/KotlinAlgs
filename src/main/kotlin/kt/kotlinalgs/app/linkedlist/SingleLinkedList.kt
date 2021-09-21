@@ -1,41 +1,5 @@
 package kt.kotlinalgs.app.linkedlist
 
-//CTCI 2.4
-
-val list = SingleLinkedList<Int>()
-list.add(SingleNode(3))
-list.add(SingleNode(5))
-list.add(SingleNode(8))
-list.add(SingleNode(5))
-list.add(SingleNode(10))
-list.add(SingleNode(2))
-list.add(SingleNode(1))
-
-list.printAll()
-println("partition ..")
-partition(list, 5)
-list.printAll()
-
-fun partition(list: SingleLinkedList<Int>, partitionElement: Int) {
-    var curNode = list.root
-    var prevNode: SingleNode<Int>? = null
-
-    while (curNode != null) {
-        val next = curNode.next
-        if (curNode.value < partitionElement) {
-            prevNode?.next = curNode.next
-            if (list.root != curNode) {
-                curNode.next = list.root
-            }
-            list.root = curNode
-        } else {
-            prevNode = curNode
-        }
-        
-        curNode = next
-    }
-}
-
 public class SingleLinkedList<T>(
     var root: SingleNode<T>? = null,
     var tail: SingleNode<T>? = null
@@ -61,7 +25,7 @@ public class SingleLinkedList<T>(
     }
 
     fun remove(node: SingleNode<T>) {
-        if (root == null) throw RuntimeException("No root")
+        if (root == null) throw RuntimeException("No element in stack")
         
         if (node == root) {
             if (root == tail) {
@@ -86,7 +50,7 @@ public class SingleLinkedList<T>(
     }
 
     fun removeFirst(): SingleNode<T> {
-        val node = root ?: throw RuntimeException("No root")
+        val node = root ?: throw RuntimeException("No element in stack")
 
         root = root?.next
         if (root == null) tail = null
@@ -100,18 +64,10 @@ public class SingleLinkedList<T>(
         while (curNode != null) {
             if (curNode == node) return prev
             prev = curNode
-            curNode = curNode?.next
+            curNode = curNode.next
         }
 
         return null
-    }
-
-    fun printAll() {
-        var curNode = root
-        while (curNode != null) {
-            println(curNode?.value)
-            curNode = curNode?.next
-        }
     }
 }
 
@@ -119,3 +75,17 @@ data class SingleNode<T>(
     val value: T,
     var next: SingleNode<T>? = null
 )
+
+fun main(){
+    println("SingleLinkedList")
+    val singleList = SingleLinkedList<Int>()
+    val node2 = SingleNode(2)
+    singleList.add(SingleNode(1))
+    singleList.add(node2)
+    singleList.add(SingleNode(3))
+    singleList.remove(node2)
+
+    println(singleList.root?.value)
+    println(singleList.root?.next?.value)
+    println(singleList.tail?.value)
+}
