@@ -14,7 +14,7 @@ class Stack<T> {
     }
 
     fun peak(): T {
-        val node = list.root ?: throw RuntimeException("No elements on stack")
+        val node = list.root ?: throw java.lang.IllegalStateException("No elements on stack")
         return node.value
     }
 }
