@@ -138,3 +138,10 @@ class StronglyConnectedComponentSearcher<T> {
         return newGraph
     }
 }
+
+// Tarjan:
+// https://www.geeksforgeeks.org/tarjan-algorithm-find-strongly-connected-components/
+
+// Kosaraju Modified version - graph connected as a whole:
+// https://www.geeksforgeeks.org/connectivity-in-a-directed-graph/
+// vertex v reaches all other vertices, and v is reachable from all vertices in reversed graph
