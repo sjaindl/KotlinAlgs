@@ -4,6 +4,17 @@ println("test1")
 println("${'a'.toInt()}")
 println("${'b'.toInt()}")
 
+val rabin = RabinKarpSubstrSearch()
+rabin.isSubstring("eyes", "meyes")
+rabin.isSubstring("eyes", "meyesss")
+rabin.isSubstring("eyes", "ears")
+rabin.isSubstring("eyes", "eye")
+rabin.isSubstring("eyes", "eyyeseyes")
+rabin.isSubstring("xxx", "ears xx  ssd xxx wed")
+
+// with Rabin Karp fingerprint O(b + s) time - worst case: O(b * s) time
+// O(s) space (2 hashes of smaller string len)
+
 class RabinKarpSubstrSearch(var base: Int = 128, var prime: Int = 66600049) {
     fun isSubstring(searched: String, full: String): Boolean {
         if (searched.isEmpty()) return true
@@ -13,26 +24,27 @@ class RabinKarpSubstrSearch(var base: Int = 128, var prime: Int = 66600049) {
         val searchedHash = buildHash(searched, len)
         var rollingHash = buildHash(full, len)
 
-        println("searched $searchedHash")
+        // println("searched $searchedHash")
 
         if (matches(0, searchedHash, rollingHash, searched, full)) return true
 
         // Rabin-Karp fingerprint
         // https://www.geeksforgeeks.org/rabin-karp-algorithm-for-pattern-searching/
         for (index in 1 until full.length - len + 1) {
-            val asciiToRemove = full[index - 1].toInt()
-            val asciiToAdd = full[index + len - 1].toInt()
-            println(asciiToRemove)
-            println(asciiToAdd)
+            val asciiToRemove = full[index - 1] - 'a'
+            val asciiToAdd = full[index + len - 1] - 'a'
+            // println(asciiToRemove)
+            // println(asciiToAdd)
 
             //Rabin Karp Fingerprint:
-            //rollingHash -= asciiToRemove * Math.pow(base.toDouble(), (len - 1).toDouble()).toInt()
-            //rollingHash *= base
-            //rollingHash += asciiToAdd
+            // println("remove: ${full[index - 1]}")
+            rollingHash -= asciiToRemove * Math.pow(base.toDouble(), (len - 1).toDouble()).toInt()
+            rollingHash *= base
+            rollingHash += asciiToAdd
 
-            rollingHash = rollingHash - asciiToRemove + asciiToAdd
+            //rollingHash = rollingHash - asciiToRemove + asciiToAdd
 
-            println(rollingHash)
+            // println(rollingHash)
             if (matches(index, searchedHash, rollingHash, searched, full)) return true
         }
 
@@ -41,13 +53,20 @@ class RabinKarpSubstrSearch(var base: Int = 128, var prime: Int = 66600049) {
 
     private fun buildHash(str: String, len: Int): Int {
         var rollingHash = 0
-        for (index in len - 1 downTo 0) {
-            val ascii = str[index].toInt() - 'a'.toInt()
-            // Rabin Karp Fingerprint:
-            //rollingHash += ascii * Math.pow(base.toDouble(), index.toDouble()).toInt() % prime
+        //println("__")
+        for (index in 0 until len) {
+            val ascii = str[index] - 'a'
 
-            rollingHash += ascii
+            // Rabin Karp Fingerprint:
+            val exponent = len - index - 1
+            rollingHash += ascii * Math.pow(base.toDouble(), exponent.toDouble()).toInt() % prime
+
+            // rollingHash += ascii
+            //   print(str[index])
         }
+
+        // println("")
+        // println("$str: $rollingHash")
         return rollingHash
     }
 
@@ -67,8 +86,3 @@ class RabinKarpSubstrSearch(var base: Int = 128, var prime: Int = 66600049) {
         return true
     }
 }
-
-val rabin = RabinKarpSubstrSearch()
-rabin.isSubstring("eyes", "meyes")
-rabin.isSubstring("eyes", "ears")
-
