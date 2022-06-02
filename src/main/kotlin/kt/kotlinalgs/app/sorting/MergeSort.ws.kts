@@ -18,20 +18,25 @@ println(array2.map { it })
 class MergeSort {
     fun sort(array: IntArray) {
         if (array.size <= 1) return
+        val aux: IntArray = array.clone()
 
-        mergeSort(array, 0, array.lastIndex)
+        mergeSort(array, 0, array.lastIndex, aux)
     }
 
-    private fun mergeSort(array: IntArray, low: Int, high: Int) {
+    private fun mergeSort(array: IntArray, low: Int, high: Int, aux: IntArray) {
         if (high <= low) return
 
         val center = low + (high - low) / 2
-        mergeSort(array, low, center)
-        mergeSort(array, center + 1, high)
-        merge(array, low, center, high)
+        mergeSort(array, low, center, aux)
+        mergeSort(array, center + 1, high, aux)
+        merge(array, low, center, high, aux)
     }
 
-    private fun merge(array: IntArray, low: Int, center: Int, high: Int) {
+    private fun merge(array: IntArray, low: Int, center: Int, high: Int, aux: IntArray) {
+        for (index in low until high + 1) aux[index] = array[index]
+
+        /*
+        // alternative: new aux array with diff. indices:
         val aux = IntArray(high - low + 1) {
             array[low + it]
         }
@@ -39,10 +44,6 @@ class MergeSort {
         var leftAux = 0
         var rightAux = center + 1 - low
         val centerAux = center - low
-
-        // println(array.map { it })
-        // println("from $low to $high")
-        // println(aux.map { it })
 
         var curArrayIndex = low
 
@@ -53,6 +54,26 @@ class MergeSort {
             else array[curArrayIndex] = aux[rightAux++] // right smaller, or equal
 
             curArrayIndex++
+        }
+
+         */
+
+        // println(array.map { it })
+        // println("from $low to $high")
+        // println(aux.map { it })
+
+        var left = low
+        var right = center + 1
+
+        var curIndex = low
+
+        while (curIndex <= high) {
+            if (left > center) array[curIndex] = aux[right++] // left exhausted
+            else if (right > high) array[curIndex] = aux[left++] // right exhausted
+            else if (aux[left] < aux[right]) array[curIndex] = aux[left++] // left smaller
+            else array[curIndex] = aux[right++] // right smaller, or equal
+
+            curIndex++
         }
     }
 }

@@ -1,7 +1,7 @@
 // https://www.pramp.com/challenge/XdMZJgZoAnFXqwjJwnBZ
 // https://www.bezkoder.com/kotlin-priority-queue/
 
-package kt.kotlinalgs.app.queue
+package kt.kotlinalgs.app.sorting
 
 import java.util.*
 
