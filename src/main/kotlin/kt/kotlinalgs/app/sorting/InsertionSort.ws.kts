@@ -2,7 +2,7 @@ package kt.kotlinalgs.app.sorting
 
 println("test")
 
-val array1 = intArrayOf(3, 2)
+val array1 = intArrayOf(3, 2, 1)
 val array2 = intArrayOf(2000, 234, 21, 41, 1, 21, 75, 0, -4)
 
 InsertionSort().sort(array1)
