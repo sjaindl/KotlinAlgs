@@ -18,10 +18,15 @@ class BucketSort {
         // 1. Put each value in a bucket - O(N)
         val buckets = Array<DoublyLinkedList>(array.size + 1) { DoublyLinkedList() }
 
+        // could also use arraylist/mutablelist for buckets, as it is asymp. O(1) for resizing built-in sort functions can be used
+        //val buckets2 = Array<MutableList<Double>>(array.size + 1) { mutableListOf() }
+
         array.forEach {
             val index = (it * array.size).toInt()
             val node = DoublyNode(it)
             buckets[index].add(node)
+
+            //buckets2[index].add(it)
         }
 
         buckets.forEachIndexed { index, bucket ->
@@ -39,6 +44,12 @@ class BucketSort {
             sort(bucket)
         }
 
+        /*
+        buckets2.forEach { bucket ->
+            bucket.sort()
+        }
+         */
+
         // 3. append buckets / write back to array - O(N)
         var index = 0
         buckets.forEach { bucket ->
@@ -49,6 +60,16 @@ class BucketSort {
                 index++
             }
         }
+
+        /*
+        index = 0
+        buckets2.forEach { bucket ->
+            bucket.forEach {
+                array[index] = it
+                index++
+            }
+        }
+         */
     }
 
     private fun sort(bucket: DoublyLinkedList) {
