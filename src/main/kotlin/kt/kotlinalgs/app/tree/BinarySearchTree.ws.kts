@@ -1,10 +1,10 @@
 println("test")
 
-val root = Node(2)
-root.left = Node(1)
-root.right = Node(3)
+val tree = BinarySearchTree<Int>(null)
 
-val tree = BinarySearchTree<Int>(root)
+tree.insert(2)
+tree.insert(3)
+tree.insert(1)
 
 println("inorderTraversal:")
 tree.inorderTraversal()
@@ -15,13 +15,40 @@ tree.preorderTraversal()
 println("postorderTraversal:")
 tree.postorderTraversal()
 
-data class Node<T>(
+data class Node<T: Comparable<T>>(
     val value: T,
     var left: Node<T>? = null,
     var right: Node<T>? = null
 )
 
-class BinarySearchTree<T>(var root: Node<T>?) {
+class BinarySearchTree<T: Comparable<T>>(var root: Node<T>?) {
+    fun insert(value: T) {
+        val node = Node(value)
+        if (root == null) {
+            root = node
+            return
+        }
+
+        var cur = root
+        while (cur != null) {
+            if (value <= cur.value) {
+                if (cur.left == null) {
+                    cur.left = node
+                    return
+                } else {
+                    cur = cur.left
+                }
+            } else { // go right
+                if (cur.right == null) {
+                    cur.right = node
+                    return
+                } else {
+                    cur = cur.right
+                }
+            }
+        }
+    }
+
     fun inorderTraversal() {
         inorderTraversal(root)
     }
