@@ -29,6 +29,7 @@ println(tree.sum(5, 5)) // 11
 println(tree.sum(2, 5)) // 37
 println(tree.sum(6, 6)) // 0
 
+// https://stackoverflow.com/questions/64190332/fenwick-tree-vs-segment-tree
 // https://www.geeksforgeeks.org/segment-tree-set-1-sum-of-given-range/
 class SegmentTree(val array: IntArray) {
     // size:
