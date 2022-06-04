@@ -29,7 +29,7 @@ CountingSort().sortWithFlexMinMax(array4)
 CountingSort().sortWithFlexMinMax(array5)
 // runtime: O(N + K), for finite ranges where N = array size & K = value range (max - min + 1)
 // space:  O(N + K), aux arrays counts (K) + output (N)
-// unstable
+// stable when 3rd pass backwards
 
 println(array1.map { it })
 println(array2.map { it })
