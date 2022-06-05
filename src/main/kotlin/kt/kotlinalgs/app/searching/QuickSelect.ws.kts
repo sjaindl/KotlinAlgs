@@ -1,4 +1,4 @@
-package kt.kotlinalgs.app.sorting
+package kt.kotlinalgs.app.searching
 
 println("test")
 
