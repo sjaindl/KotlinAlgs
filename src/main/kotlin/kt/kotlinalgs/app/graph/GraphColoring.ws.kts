@@ -114,7 +114,6 @@ class GraphColoring {
         if (usedColors.isEmpty()) return 0
         var lastColor = -1
 
-
         usedColors.forEach { //O(V)
             if (it != lastColor + 1) return lastColor + 1
             lastColor = it

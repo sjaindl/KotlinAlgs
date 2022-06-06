@@ -26,7 +26,7 @@ class Solution {
 
 class HamiltonianCycle {
     // https://www.geeksforgeeks.org/hamiltonian-cycle-backtracking-6/
-    // worst case O(N!) .. but backtracking improves this naive algo much
+    // worst case O(V * V!) .. but backtracking improves this naive algo much
     fun path(graph: DirectedWeightedGraphWithAdjMatrix): List<Int>? {
         // backtracking
         if (graph.matrix.isEmpty()) return emptyList()

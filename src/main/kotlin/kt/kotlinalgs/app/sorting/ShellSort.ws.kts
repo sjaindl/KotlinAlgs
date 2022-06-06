@@ -7,7 +7,7 @@ val array2 = intArrayOf(2000, 234, 21, 41, 1, 21, 75, 0, -4)
 
 ShellSort().sort(array1)
 ShellSort().sort(array2)
-// runtime: O(N log N) worst + average case, O(N) best case
+// runtime: O(N^2) worst + average case, O(N) best case
 // space: O(1)
 // unstable
 

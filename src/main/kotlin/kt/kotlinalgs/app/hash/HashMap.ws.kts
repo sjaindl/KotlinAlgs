@@ -8,7 +8,6 @@ class MyHashMap<K, V>(
     val maxTreshold: Double = 0.75,
     val minTreshold: Double = 0.25
 ) {
-
     private var numElements = 0
 
     private data class Node<K, V>(val key: K, var value: V)

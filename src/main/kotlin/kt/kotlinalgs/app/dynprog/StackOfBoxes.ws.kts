@@ -15,9 +15,9 @@ println(Solution().maxHeight(boxes)) // 7 + 3 + 5 + 6 = 21
 // 1.  Achung: Versuchen für memo arguments zu verringern
 // zb nur index statt index + lastWidth + lastDepth .. in dem Fall zb vor Aufruf und in Wrapper method auf valid checken!
 // 2. auch maxHeight nicht nötig mitzugeben, kann in rec. Method ausgerechnet werden!!
-    // schema immer: max = 0.
-        //  for x in .. : max = Math.max(max, rec(..)).
-    // ev. max += cur
+// schema immer: max = 0.
+//  for x in .. : max = Math.max(max, rec(..)).
+// ev. max += cur
 // 3. und wenn möglich start bei index 0, nicht -1!! lieber mehr code/extra loop in wrapper!
 
 data class Box(
@@ -31,8 +31,8 @@ class Solution {
     // without memo: O(N^2) runtime
     fun maxHeight(boxes: List<Box>): Int {
         // 1. sort by height decreasing (eliminate 1 dimension)
-        val sorted = boxes.sortedBy {
-            -it.height
+        val sorted = boxes.sortedByDescending {
+            it.height
         }
 
         println(sorted)
@@ -42,7 +42,7 @@ class Solution {
         // try each start box
         var max = 0
         for (index in boxes.indices) {
-            max = Math.max(max, maxHeightRec(sorted, index, memo))
+            max = maxOf(max, maxHeightRec(sorted, index, memo))
         }
 
         return max
@@ -83,7 +83,7 @@ class Solution {
                     nextBoxIndex,
                     memo
                 )
-                maxHeight = Math.max(maxHeight, heightIncludingBox)
+                maxHeight = maxOf(maxHeight, heightIncludingBox)
             }
         }
 

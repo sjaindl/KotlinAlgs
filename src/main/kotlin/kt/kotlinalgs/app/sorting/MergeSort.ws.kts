@@ -18,7 +18,7 @@ println(array2.map { it })
 class MergeSort {
     fun sort(array: IntArray) {
         if (array.size <= 1) return
-        val aux: IntArray = array.clone()
+        val aux: IntArray = array.copyOf()
 
         mergeSort(array, 0, array.lastIndex, aux)
     }
@@ -67,13 +67,12 @@ class MergeSort {
 
         var curIndex = low
 
+        // while (left < center || right <= high) {
         while (curIndex <= high) {
-            if (left > center) array[curIndex] = aux[right++] // left exhausted
-            else if (right > high) array[curIndex] = aux[left++] // right exhausted
-            else if (aux[left] < aux[right]) array[curIndex] = aux[left++] // left smaller
-            else array[curIndex] = aux[right++] // right smaller, or equal
-
-            curIndex++
+            if (left > center) array[curIndex++] = aux[right++] // left exhausted
+            else if (right > high) array[curIndex++] = aux[left++] // right exhausted
+            else if (aux[left] < aux[right]) array[curIndex++] = aux[left++] // left smaller
+            else array[curIndex++] = aux[right++] // right smaller, or equal
         }
     }
 }

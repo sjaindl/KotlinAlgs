@@ -24,7 +24,7 @@ class BitVector(val size: Int) {
     }
 
     fun contains(bit: Int): Boolean {
-        return get(bit) > 0
+        return get(bit) != 0
     }
 
     fun get(bit: Int): Int {

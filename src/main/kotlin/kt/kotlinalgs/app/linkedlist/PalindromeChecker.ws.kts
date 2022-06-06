@@ -2,7 +2,7 @@ package kt.kotlinalgs.app.linkedlist
 
 import java.util.*
 
-//CTCI 2.4
+//CTCI 2.6
 
 val list1 = SingleLinkedList<Int>()
 list1.add(SingleNode(1))

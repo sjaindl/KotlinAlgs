@@ -98,13 +98,13 @@ class Prim {
 
         pq.add(graph.vertices[0])
 
-        while (!pq.isEmpty()) { // E
+        while (!pq.isEmpty()) { // V
             val cur = pq.pollFirst() // // O(log V)
 
             output.add(cur)
             inMst.add(cur)
 
-            graph.edges[cur]?.forEach {
+            graph.edges[cur]?.forEach { // E
                 if (!inMst.contains(it.to) && it.weight < it.to.distance) { // O(log V)
                     if (pq.contains(it.to)) {
                         pq.remove(it.to) // O(log V)
@@ -120,7 +120,7 @@ class Prim {
             }
         }
 
-        // total = O(E log V)
+        // total = O(E log V + V log V)
 
         return output
     }

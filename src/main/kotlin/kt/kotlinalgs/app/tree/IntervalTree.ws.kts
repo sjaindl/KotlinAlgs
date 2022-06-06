@@ -39,7 +39,7 @@ class IntervalTree<T : Comparable<T>> {
         val left = cur.left
 
         return if (overlaps(cur, searchedInterval)) cur.value
-        else if (left != null && left.max >= searchedInterval.second) overlappingInterval(left, searchedInterval)
+        else if (left != null && left.max >= searchedInterval.first) overlappingInterval(left, searchedInterval)
         else overlappingInterval(root.right, searchedInterval)
     }
 
@@ -82,12 +82,13 @@ class BinarySearchTree<T : Comparable<T>>(var root: Node<T>?) {
 
         var cur = root
         while (cur != null) {
+            cur.max = maxOf(node.high, cur.max)
+
             if (node.low <= cur.low) {
                 if (cur.left == null) {
                     cur.left = node
                     return
                 } else {
-                    cur.max = if (node.high > cur.max) cur.max else node.high
                     cur = cur.left
                 }
             } else { // go right
@@ -95,7 +96,6 @@ class BinarySearchTree<T : Comparable<T>>(var root: Node<T>?) {
                     cur.right = node
                     return
                 } else {
-                    cur.max = if (node.high > cur.max) cur.max else node.high
                     cur = cur.right
                 }
             }

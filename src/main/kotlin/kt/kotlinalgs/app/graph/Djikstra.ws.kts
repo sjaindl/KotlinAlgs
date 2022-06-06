@@ -101,12 +101,13 @@ class Djikstra() {
             it.distance
         }
 
-        val pq = PriorityQueue<Vertice>(11, cmp)
+        //val pq = PriorityQueue<Vertice>(11, cmp)
+        val pq = TreeSet<Vertice>(cmp)
         // Oder treeset für remove/update, IndexedPQ?
         pq.add(from)
 
         while (!pq.isEmpty()) {
-            val min = pq.poll() // V log V (remove)
+            val min = pq.pollFirst() //pq.poll() // V log V (remove)
             if (min.distance == Int.MAX_VALUE) continue
 
             graph.edges[min]?.forEach { // E log V (insert)
@@ -114,6 +115,8 @@ class Djikstra() {
                 if (curDist < it.to.distance) {
                     it.to.distance = curDist
                     it.to.prev = min
+
+                    if (pq.contains(it.to)) pq.remove(it.to)
                     pq.add(it.to)
                 }
             }

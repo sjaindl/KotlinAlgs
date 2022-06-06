@@ -1,6 +1,6 @@
 package kt.kotlinalgs.app.linkedlist
 
-//CTCI 2.4
+//CTCI 2.5
 
 val node1Head = SingleNode<Int>(1)
 node1Head.next = SingleNode<Int>(2)

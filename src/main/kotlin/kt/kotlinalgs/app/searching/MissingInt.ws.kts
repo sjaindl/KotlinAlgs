@@ -59,8 +59,9 @@ class BitVector(val size: Int) {
         val elementIndex = bit % 32
         val mask = 1 shl elementIndex
 
-        val bin = toBinary(bits[index])
+        // val bin = toBinary(bits[index])
 
+        // != 0 instead of > 0, as bit 32 is sign bit, which is < 0!!
         return bits[index] and mask != 0
     }
 
@@ -72,9 +73,9 @@ class BitVector(val size: Int) {
         val elementIndex = bit % 32
         val mask = 1 shl elementIndex
 
-        val bin = toBinary(bits[index])
+        // val bin = toBinary(bits[index])
         bits[index] = bits[index] or mask
-        val bin2 = toBinary(bits[index])
+        // val bin2 = toBinary(bits[index])
     }
 
     fun toBinary(x: Int, len: Int = 32): String {

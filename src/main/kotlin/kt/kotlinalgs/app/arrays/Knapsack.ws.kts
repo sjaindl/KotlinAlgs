@@ -53,14 +53,12 @@ class Knapsack {
             }
         }
 
-        /*
         dp.forEach {
             println("")
             it.forEach { value ->
                 print("$value, ")
             }
         }
-         */
 
         return dp[values.size][maxWeight]
     }

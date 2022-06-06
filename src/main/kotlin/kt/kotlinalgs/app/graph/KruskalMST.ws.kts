@@ -120,7 +120,7 @@ class Kruskal() {
 
         var edgeIndex = 0
 
-        while (output.size < graph.vertices.size - 1) { //O(V)
+        while (output.size < graph.vertices.size - 1 && !edgeIndex >= edges.size) { //O(V)
             val nextEdge = edges[edgeIndex] // O(1)
             edgeIndex++
 

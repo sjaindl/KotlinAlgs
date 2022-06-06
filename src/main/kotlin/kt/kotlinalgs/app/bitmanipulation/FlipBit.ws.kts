@@ -16,16 +16,16 @@ fun flipBit(number: Int): Int {
 
     // 0b11011101111
     for (bit in 0 until 32) { //8
-        val isOne = number and (1 shl bit) > 0
+        val isOne = number and (1 shl bit) != 0
 
         if (isOne) {
-            if (onlyOnes == null) onlyOnes = bit
             if (onlyOnes != null && withOneZero == null) withOneZero = bit
+            if (onlyOnes == null) onlyOnes = bit
         } else {
             if (withOneZero != null) {
-                max = Math.max(max, bit - withOneZero) // 5
+                max = maxOf(max, bit - withOneZero) // 5
             } else if (onlyOnes != null) {
-                max = Math.max(max, bit - onlyOnes) // 4
+                max = maxOf(max, bit - onlyOnes) // 4
             }
 
             withOneZero = onlyOnes

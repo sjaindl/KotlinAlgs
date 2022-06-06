@@ -223,6 +223,31 @@ hashMap.remove(4)
 hashMap.toList().map { it }
 hashMap.contains(1)
 
+val stack = Stack<Int>()
+stack.push(1)
+stack.push(2)
+stack.push(3)
+stack.peek()
+stack.pop()
+
+val queue = LinkedList<Int>()
+queue.add(1) // = linkLast
+queue.add(2)
+queue.add(3)
+queue.add(4)
+
+queue.peek() // first
+queue.poll() // first
+queue.remove() // first
+
+queue.last
+queue.first
+
+val pq = PriorityQueue<Int>(11, Comparator.reverseOrder())
+pq.addAll(listOf(1, 2, 3, 4, 5))
+pq.peek()
+pq.poll()
+
 // strings
 // https://zetcode.com/kotlin/strings/
 
@@ -263,7 +288,7 @@ testString.filter {
     it < 't'
 }
 
-val words =listOf("cat", "catty", "bat", "catamaran")
+val words = listOf("cat", "catty", "bat", "catamaran")
 words.filter {
     it.startsWith("c")
 }

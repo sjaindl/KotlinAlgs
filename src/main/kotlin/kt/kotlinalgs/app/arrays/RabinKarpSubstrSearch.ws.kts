@@ -1,5 +1,7 @@
 package kt.kotlinalgs.app.arrays
 
+import kotlin.math.pow
+
 println("test1")
 println("${'a'.toInt()}")
 println("${'b'.toInt()}")
@@ -38,7 +40,7 @@ class RabinKarpSubstrSearch(var base: Int = 128, var prime: Int = 66600049) {
 
             //Rabin Karp Fingerprint:
             // println("remove: ${full[index - 1]}")
-            rollingHash -= asciiToRemove * Math.pow(base.toDouble(), (len - 1).toDouble()).toInt()
+            rollingHash -= asciiToRemove * base.toDouble().pow((len - 1)).toInt()
             rollingHash *= base
             rollingHash += asciiToAdd
 
@@ -59,7 +61,7 @@ class RabinKarpSubstrSearch(var base: Int = 128, var prime: Int = 66600049) {
 
             // Rabin Karp Fingerprint:
             val exponent = len - index - 1
-            rollingHash += ascii * Math.pow(base.toDouble(), exponent.toDouble()).toInt() % prime
+            rollingHash += ascii * base.toDouble().pow(exponent.toDouble()).toInt() % prime
 
             // rollingHash += ascii
             //   print(str[index])
@@ -86,3 +88,7 @@ class RabinKarpSubstrSearch(var base: Int = 128, var prime: Int = 66600049) {
         return true
     }
 }
+
+// Alternatives:
+// https://www.geeksforgeeks.org/kmp-algorithm-for-pattern-searching/
+// https://www.baeldung.com/java-pattern-matching-suffix-tree

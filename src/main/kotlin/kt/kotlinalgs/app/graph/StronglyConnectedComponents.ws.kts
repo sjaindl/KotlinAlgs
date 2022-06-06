@@ -127,7 +127,7 @@ class StronglyConnectedComponentSearcher<T> {
     }
 
     private fun reverse(graph: DirectedGraphWithAdjList<T>): DirectedGraphWithAdjList<T> {
-        val newGraph = DirectedGraphWithAdjList(graph.vertices)
+        val newGraph = DirectedGraphWithAdjList(graph.vertices.toList())
 
         graph.vertices.forEach { dest ->
             graph.neighbours(dest).forEach { src ->

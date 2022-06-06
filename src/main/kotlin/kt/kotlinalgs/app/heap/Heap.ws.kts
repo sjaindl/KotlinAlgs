@@ -57,11 +57,11 @@ class MinHeap(var capacity: Int = 7) {
     private fun bubbleUp(from: Int) {
         var cur = from
         while (cur > 0) {
-            val parent = cur / 2
+            val parent = (cur - 1) / 2
             if (array[parent] <= array[cur]) return
-
+            
             exchange(parent, cur)
-            cur /= 2
+            cur = parent
         }
     }
 

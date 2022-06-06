@@ -20,12 +20,14 @@ class InsertionSort {
 
         for (firstIndex in 1 until array.size) {
             val referenceValue = array[firstIndex] // 2
-            var secondIndex = firstIndex // 0
-            while (secondIndex > 0 && array[secondIndex - 1] > referenceValue) {
-                secondIndex--
+            var secondIndex = firstIndex - 1 // 0
+
+            while (secondIndex >= 0 && array[secondIndex] > referenceValue) {
                 array[secondIndex + 1] = array[secondIndex]
+                secondIndex--
             }
-            array[secondIndex] = referenceValue
+
+            array[secondIndex + 1] = referenceValue
         }
     }
 }

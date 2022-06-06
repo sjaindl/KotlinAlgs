@@ -34,6 +34,9 @@ class DirectedGraphWithAdjList<T>(val vertices: List<Vertice<T>> = emptyList()) 
     }
 }
 
+// https://www.geeksforgeeks.org/m-coloring-problem-backtracking-5/
+// TODO! Somehow bipartite graph algo landed here instead of backtracking + BFS..
+
 class BipartiteChecker<T> {
     fun isBipartiteBFS(graph: DirectedGraphWithAdjList<T>): Boolean {
         if (graph.vertices.size <= 2) return true
