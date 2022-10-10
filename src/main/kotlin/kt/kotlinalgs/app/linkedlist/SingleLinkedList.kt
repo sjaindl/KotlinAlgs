@@ -1,4 +1,4 @@
-package kt.kotlinalgs.app.linkedlist
+package com.sjaindl.kotlinalgsandroid.linkedlist
 
 public class SingleLinkedList<T>(
     var root: SingleNode<T>? = null,
@@ -69,9 +69,17 @@ public class SingleLinkedList<T>(
 
         return null
     }
+
+    fun printAll() {
+        var curNode = root
+        while (curNode != null) {
+            println(curNode.value)
+            curNode = curNode.next
+        }
+    }
 }
 
-data class SingleNode<T>(
+public data class SingleNode<T>(
     val value: T,
     var next: SingleNode<T>? = null
 )

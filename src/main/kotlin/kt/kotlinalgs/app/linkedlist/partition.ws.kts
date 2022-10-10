@@ -2,23 +2,23 @@ package kt.kotlinalgs.app.linkedlist
 
 //CTCI 2.4
 
-val list = SingleLinkedList<Int>()
-list.add(SingleNode(3))
-list.add(SingleNode(5))
-list.add(SingleNode(8))
-list.add(SingleNode(5))
-list.add(SingleNode(10))
-list.add(SingleNode(2))
-list.add(SingleNode(1))
+val list = com.sjaindl.kotlinalgsandroid.linkedlist.SingleLinkedList<Int>()
+list.add(com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode(3))
+list.add(com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode(5))
+list.add(com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode(8))
+list.add(com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode(5))
+list.add(com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode(10))
+list.add(com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode(2))
+list.add(com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode(1))
 
 list.printAll()
 println("partition ..")
 partition(list, 5)
 list.printAll()
 
-fun partition(list: SingleLinkedList<Int>, partitionElement: Int) {
+fun partition(list: com.sjaindl.kotlinalgsandroid.linkedlist.SingleLinkedList<Int>, partitionElement: Int) {
     var curNode = list.root
-    var prevNode: SingleNode<Int>? = null
+    var prevNode: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<Int>? = null
 
     while (curNode != null) {
         val next = curNode.next
@@ -37,10 +37,10 @@ fun partition(list: SingleLinkedList<Int>, partitionElement: Int) {
 }
 
 public class SingleLinkedList<T>(
-    var root: SingleNode<T>? = null,
-    var tail: SingleNode<T>? = null
+    var root: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>? = null,
+    var tail: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>? = null
 ) {
-    fun add(node: SingleNode<T>) {
+    fun add(node: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>) {
         if (root == null) {
             root = node
             tail = node
@@ -50,7 +50,7 @@ public class SingleLinkedList<T>(
         }
     }
     
-    fun addFront(node: SingleNode<T>) {
+    fun addFront(node: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>) {
         if (root == null) {
             root = node
             tail = node
@@ -60,7 +60,7 @@ public class SingleLinkedList<T>(
         }
     }
 
-    fun remove(node: SingleNode<T>) {
+    fun remove(node: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>) {
         if (root == null) throw RuntimeException("No root")
         
         if (node == root) {
@@ -85,7 +85,7 @@ public class SingleLinkedList<T>(
         }
     }
 
-    fun removeFirst(): SingleNode<T> {
+    fun removeFirst(): com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T> {
         val node = root ?: throw RuntimeException("No root")
 
         root = root?.next
@@ -94,9 +94,9 @@ public class SingleLinkedList<T>(
         return node
     }
     
-    fun predecessor(node: SingleNode<T>) : SingleNode<T>? {
+    fun predecessor(node: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>) : com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>? {
         var curNode = root
-        var prev: SingleNode<T>? = null
+        var prev: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>? = null
         while (curNode != null) {
             if (curNode == node) return prev
             prev = curNode
@@ -117,5 +117,5 @@ public class SingleLinkedList<T>(
 
 data class SingleNode<T>(
     val value: T,
-    var next: SingleNode<T>? = null
+    var next: com.sjaindl.kotlinalgsandroid.linkedlist.SingleNode<T>? = null
 )

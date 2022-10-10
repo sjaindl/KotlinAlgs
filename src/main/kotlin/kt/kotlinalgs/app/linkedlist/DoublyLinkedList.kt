@@ -1,4 +1,4 @@
-package kt.kotlinalgs.app.linkedlist
+package com.sjaindl.kotlinalgsandroid.linkedlist
 
 class DoublyLinkedList<T>(
     var root: DoublyNode<T>? = null,
