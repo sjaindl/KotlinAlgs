@@ -248,6 +248,18 @@ pq.addAll(listOf(1, 2, 3, 4, 5))
 pq.peek()
 pq.poll()
 
+// pair
+var pair: Pair<Int, String> = Pair(1,"")
+
+// enum
+enum class Test {
+    ONE, TWO, THREE
+}
+val test = Test.ONE
+when (test) {
+    Test.ONE -> println("1")
+}
+
 // strings
 // https://zetcode.com/kotlin/strings/
 
