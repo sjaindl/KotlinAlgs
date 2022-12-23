@@ -1,142 +1,135 @@
-package kt.kotlinalgs.app.graph
+package com.sjaindl.kotlinalgsandroid.graph
 
 import java.util.*
 
-println("Test")
-
-val verticeA = Vertice("A")
-val verticeB = Vertice("B")
-val verticeC = Vertice("C")
-val verticeD = Vertice("D")
-val verticeE = Vertice("E")
-val verticeF = Vertice("F")
-
-val graph = WeightedDirectedGraph(
-    listOf(
-        verticeA, verticeB, verticeC, verticeD, verticeE, verticeF
-    )
-)
-
-// https://www.baeldung.com/java-dijkstra:
-graph.addEdge(verticeA, verticeB, 10)
-graph.addEdge(verticeA, verticeC, 15)
-graph.addEdge(verticeB, verticeD, 12)
-graph.addEdge(verticeB, verticeF, 15)
-graph.addEdge(verticeC, verticeE, 10)
-graph.addEdge(verticeD, verticeE, 2)
-graph.addEdge(verticeD, verticeF, 1)
-graph.addEdge(verticeF, verticeE, 5)
-
-val djikstra = Djikstra()
-djikstra.shortestPaths(verticeA, graph)
-djikstra.printMinPath(verticeA, verticeB, graph)
-djikstra.printMinPath(verticeA, verticeC, graph)
-djikstra.printMinPath(verticeA, verticeD, graph)
-djikstra.printMinPath(verticeA, verticeE, graph)
-djikstra.printMinPath(verticeA, verticeF, graph)
-
-data class Vertice(
-    val value: String,
-    var distance: Int = Integer.MAX_VALUE,
-    var prev: Vertice? = null
-) {
-    override fun equals(other: Any?): Boolean {
-        val oth = other as? Vertice ?: return false
-        return value == oth.value
-    }
-
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
-}
-
-/*: Comparable<Vertice> {
-    override fun compareTo(other: Vertice): Int {
-        return distance - other.distance
-    }
-} */
-
-data class Edge(
-    val from: Vertice,
-    val to: Vertice,
-    val weight: Int
-)
-
-data class WeightedDirectedGraph(val vertices: List<Vertice>) {
-    var edges: MutableMap<Vertice, MutableList<Edge>> = mutableMapOf()
-
-    fun addEdge(from: Vertice, to: Vertice, weight: Int) {
-        val edge = Edge(from, to, weight)
-        val list = edges.getOrDefault(from, mutableListOf())
-        list.add(edge)
-        edges[from] = list
-    }
-}
-
-class Djikstra() {
-    /*
-        Shortest path with weighted positive edges between start node and all other nodes.
-
-        1. construct weighted directed graph with edges
-        2. set start dist to 0, other to max int/Infinity
-        3. init min pq (sort by vertice distance)
-        4. add start vertice to pq
-        5. while !pq.isEmpty: (E+V)
-            poll min
-            check neighbours: if from.distance + edge weight < to.distance:
-                update to.distance & put in pq (log V)
-
-    runtime:
-        O((E+V) log V)
-        https://inst.eecs.berkeley.edu/~cs61bl/r//cur/graphs/dijkstra-algorithm-runtime.html?topic=lab24.topic&step=4&course=
-    Using PQ (array: V * V = V^2, heap: V log V + E log V = remove min + remove/add neighbor nodes prio)
+/*
+    Djikstra
+    shortest path with weighted positive edges between start node and all other nodes.
+    Using PQ (array: V * V = V^2, heap: V log V + E log V = O(E+V) log V remove min + update neighbor nodes prio)
  */
-    fun shortestPaths(from: Vertice, graph: WeightedDirectedGraph) {
+
+// https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/
+class Djikstra<T> {
+    fun shortestPath(graph: Graph<T>, source: Vertice<T>, target: Vertice<T>): List<T> {
+        // link to best prev vertice in path:
+        val previous: MutableMap<T, Vertice<T>> = mutableMapOf()
+
+        //remaining vertices to check, sorted by total weight
+        val remaining = PriorityQueue<Vertice<T>>()
+
         graph.vertices.forEach {
-            it.distance = Int.MAX_VALUE
+            it.pathCost = Int.MAX_VALUE
         }
-        from.distance = 0
+        source.pathCost = 0 // all other costs init. to int max value
 
-        val cmp: Comparator<Vertice> = compareBy {
-            it.distance
-        }
+        remaining.add(source)
 
-        //val pq = PriorityQueue<Vertice>(11, cmp)
-        val pq = TreeSet<Vertice>(cmp)
-        // Oder treeset für remove/update, IndexedPQ?
-        pq.add(from)
+        while (!remaining.isEmpty()) {
+            val current = remaining.poll() ?: continue
+            //println(current.value)
 
-        while (!pq.isEmpty()) {
-            val min = pq.pollFirst() //pq.poll() // V log V (remove)
-            if (min.distance == Int.MAX_VALUE) continue
-
-            graph.edges[min]?.forEach { // E log V (insert)
-                val curDist = min.distance + it.weight
-                if (curDist < it.to.distance) {
-                    it.to.distance = curDist
-                    it.to.prev = min
-
-                    if (pq.contains(it.to)) pq.remove(it.to)
-                    pq.add(it.to)
+            graph.neighbors[current.value]?.forEach { edge ->
+                val otherBest = edge.to.pathCost
+                val curPathCost = current.pathCost + edge.weight
+                
+                if (curPathCost < otherBest) {
+                    previous[edge.to.value] = current
+                    edge.to.pathCost = curPathCost
+                    remaining.add(edge.to)
+                    // edge ${edge.from.value}-${edge.to.value}: ${edge.to.pathCost}")
                 }
             }
         }
+
+        return backtrack(source, target, previous)
     }
 
-    fun printMinPath(from: Vertice, to: Vertice, graph: WeightedDirectedGraph) {
-        val distance = to.distance
-
-        val stack = Stack<Vertice>()
-        var cur: Vertice? = to
-        while (cur != null) {
-            stack.push(cur)
-            cur = cur.prev
+    private fun backtrack(
+        source: Vertice<T>,
+        target: Vertice<T>,
+        previous: Map<T, Vertice<T>>
+    ): List<T> {
+        //backtrack best path
+        val bestPath: MutableList<T> = mutableListOf()
+        var curNode: Vertice<T>? = target
+        println("cost: ${target.pathCost}")
+        while (curNode != null && curNode != source) {
+            bestPath.add(curNode.value)
+            curNode = previous[curNode.value]
         }
 
-        while (!stack.isEmpty()) {
-            println("${stack.pop().value} -> ")
+        if (curNode == source) {
+            bestPath.add(curNode.value)
+            return bestPath
         }
 
-        println("Distance: $distance")
+        return emptyList()
     }
 }
+
+data class Vertice<T>(
+    val value: T,
+    var pathCost: Int = Int.MAX_VALUE
+) : Comparable<Vertice<T>> {
+    override fun compareTo(other: Vertice<T>): Int {
+        if (pathCost == other.pathCost) return 0
+        else if (pathCost < other.pathCost) return -1
+        return 1
+    }
+}
+
+class Graph<T>(val vertices: List<Vertice<T>>) {
+    var neighbors: MutableMap<T, MutableList<DirectedWeightedEdge<T>>> = mutableMapOf()
+
+    fun addEdge(edge: DirectedWeightedEdge<T>) {
+        val neighboursOf = neighbors.getOrDefault(edge.from.value, mutableListOf())
+        neighboursOf.add(edge)
+        neighbors[edge.from.value] = neighboursOf
+    }
+}
+
+data class DirectedWeightedEdge<T>(
+    val weight: Int,
+    val from: Vertice<T>,
+    val to: Vertice<T>
+)
+
+val verticeA = Vertice("a")
+val verticeB = Vertice("b")
+val verticeC = Vertice("c")
+val verticeD = Vertice("d")
+val verticeE = Vertice("e")
+val verticeF = Vertice("f")
+val verticeG = Vertice("g")
+val verticeH = Vertice("h")
+val verticeI = Vertice("i")
+
+val vertices = listOf(
+    verticeA, verticeB, verticeC,
+    verticeD, verticeE, verticeF,
+    verticeG, verticeH, verticeI
+)
+
+val graph = Graph(vertices)
+
+graph.addEdge(DirectedWeightedEdge(5, verticeA, verticeB))
+graph.addEdge(DirectedWeightedEdge(3, verticeA, verticeC))
+graph.addEdge(DirectedWeightedEdge(2, verticeA, verticeE))
+graph.addEdge(DirectedWeightedEdge(2, verticeB, verticeD))
+graph.addEdge(DirectedWeightedEdge(1, verticeC, verticeB))
+graph.addEdge(DirectedWeightedEdge(1, verticeC, verticeD))
+graph.addEdge(DirectedWeightedEdge(1, verticeD, verticeA))
+graph.addEdge(DirectedWeightedEdge(2, verticeD, verticeG))
+graph.addEdge(DirectedWeightedEdge(1, verticeD, verticeH))
+graph.addEdge(DirectedWeightedEdge(1, verticeE, verticeA))
+graph.addEdge(DirectedWeightedEdge(4, verticeE, verticeH))
+graph.addEdge(DirectedWeightedEdge(7, verticeE, verticeI))
+graph.addEdge(DirectedWeightedEdge(3, verticeF, verticeB))
+graph.addEdge(DirectedWeightedEdge(1, verticeF, verticeG))
+graph.addEdge(DirectedWeightedEdge(3, verticeG, verticeC))
+graph.addEdge(DirectedWeightedEdge(2, verticeG, verticeI))
+graph.addEdge(DirectedWeightedEdge(2, verticeH, verticeC))
+graph.addEdge(DirectedWeightedEdge(2, verticeH, verticeF))
+graph.addEdge(DirectedWeightedEdge(2, verticeH, verticeG))
+
+Djikstra<String>().shortestPath(graph, verticeA, verticeI)

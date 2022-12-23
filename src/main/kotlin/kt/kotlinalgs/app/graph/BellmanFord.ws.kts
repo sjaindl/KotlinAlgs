@@ -1,93 +1,92 @@
-package kt.kotlinalgs.app.graph
-
-println("Test")
-
-data class Vertice(val value: String)
-
-data class Edge(
-    val from: Vertice,
-    val to: Vertice,
-    val weight: Int
-)
-
-data class WeightedDirectedGraph(val vertices: List<Vertice>) {
-    var edges: MutableList<Edge> = mutableListOf()
-
-    fun addEdge(from: Vertice, to: Vertice, weight: Int) {
-        val edge = Edge(from, to, weight)
-        edges.add(edge)
-    }
-}
+package com.sjaindl.kotlinalgsandroid.graph
 
 /*
-for each vertice in 0 until V - 1 (min path for each vertice is max V-1 edges long):
-
-runtime: O(V*E)
+    BellmannFord
+    shortest path with weighted negative edges between start node and all other nodes.
+    Using array: O(V*E)
  */
-class BellmanFord() {
-    fun allShortestPaths(graph: WeightedDirectedGraph): MutableMap<Vertice, Int> {
-        val dist: MutableMap<Vertice, Int> = mutableMapOf()
+
+//https://www.geeksforgeeks.org/bellman-ford-algorithm-dp-23/
+class BellmannFord<T> {
+    fun shortestPath(graph: Graph<T>, source: Vertice<T>, target: Vertice<T>): Int {
+        val shortestPaths: MutableMap<T, Int> = mutableMapOf() //vertice_val to shortest_path
+
         graph.vertices.forEach {
-            dist.put(it, Int.MAX_VALUE)
+            shortestPaths[it.value] = Int.MAX_VALUE
         }
+        shortestPaths[source.value] = 0
 
-        dist.put(graph.vertices[0], 0)
-
-        //IntArray(graph.vertices.size) { Int.MAX_VALUE }
-        //dist[0] = 0
-
-        for (v in 0 until graph.vertices.size - 1) {
+        // Relax edges
+        for (iteration in 1 until graph.vertices.size) {
             graph.edges.forEach {
-                val distFrom = dist[it.from] ?: return@forEach
-                val distTo = dist[it.to] ?: return@forEach
-                if (distFrom == Int.MAX_VALUE) return@forEach
-
-                val curValue = distFrom + it.weight
-                if (curValue < distTo) {
-                    dist[it.to] = curValue
+                val curDist = shortestPaths[it.from.value]!! + it.weight
+                if (shortestPaths[it.from.value]!! != Int.MAX_VALUE && curDist < shortestPaths[it.to.value]!!) {
+                    shortestPaths[it.to.value] = curDist
                 }
             }
         }
 
-        // check for negative cycle
+        //check for negative cycles!
         graph.edges.forEach {
-            val distFrom = dist[it.from] ?: return@forEach
-            val distTo = dist[it.to] ?: return@forEach
-            if (distFrom == Int.MAX_VALUE) return@forEach
-
-            val curValue = distFrom + it.weight
-            if (curValue < distTo) {
-                println("Negative cycle found!")
-                return mutableMapOf()
+            val curDist = shortestPaths[it.from.value]!! + it.weight
+            if (curDist != Int.MAX_VALUE && curDist < shortestPaths[it.to.value]!!) {
+                println("negative cycle found!!")
+                //throw IllegalStateException("negative cycle found!!")
+                return Int.MIN_VALUE
             }
         }
 
-        return dist
+
+        return shortestPaths[target.value]!!
     }
 }
 
-//https://www.geeksforgeeks.org/bellman-ford-algorithm-dp-23/
-val verticeA = Vertice("A")
-val verticeB = Vertice("B")
-val verticeC = Vertice("C")
-val verticeD = Vertice("D")
-val verticeE = Vertice("E")
-
-val graph = WeightedDirectedGraph(
-    listOf(
-        verticeA, verticeB, verticeC, verticeD, verticeE
-    )
+data class Vertice<T>(
+    val value: T,
 )
 
-graph.addEdge(verticeA, verticeB, -1)
-graph.addEdge(verticeA, verticeC, 4)
-graph.addEdge(verticeB, verticeC, 3)
-graph.addEdge(verticeB, verticeD, 2)
-graph.addEdge(verticeB, verticeE, 2)
-graph.addEdge(verticeD, verticeB, 2)
-graph.addEdge(verticeD, verticeC, 5)
-graph.addEdge(verticeE, verticeD, -3)
+class Graph<T>(val vertices: List<Vertice<T>>) {
+    var neighbors: MutableMap<T, MutableList<DirectedWeightedEdge<T>>> = mutableMapOf()
+    var edges: MutableList<DirectedWeightedEdge<T>> = mutableListOf()
 
-val bellmanFord = BellmanFord()
-bellmanFord.allShortestPaths(graph)
+    fun addEdge(edge: DirectedWeightedEdge<T>) {
+        val neighboursOf = neighbors.getOrDefault(edge.from.value, mutableListOf())
+        neighboursOf.add(edge)
+        neighbors[edge.from.value] = neighboursOf
 
+        edges.add(edge)
+    }
+}
+
+data class DirectedWeightedEdge<T>(
+    val weight: Int,
+    val from: Vertice<T>,
+    val to: Vertice<T>
+)
+
+val verticeA = Vertice("a")
+val verticeB = Vertice("b")
+val verticeC = Vertice("c")
+val verticeD = Vertice("d")
+val verticeE = Vertice("e")
+
+val vertices = listOf(
+    verticeA, verticeB, verticeC,
+    verticeD, verticeE
+)
+
+val graph = Graph(vertices)
+
+graph.addEdge(DirectedWeightedEdge(-1, verticeA, verticeB))
+graph.addEdge(DirectedWeightedEdge(4, verticeA, verticeC))
+graph.addEdge(DirectedWeightedEdge(2, verticeB, verticeE))
+graph.addEdge(DirectedWeightedEdge(2, verticeB, verticeD))
+graph.addEdge(DirectedWeightedEdge(3, verticeB, verticeC))
+graph.addEdge(DirectedWeightedEdge(1, verticeD, verticeB))
+graph.addEdge(DirectedWeightedEdge(5, verticeD, verticeC))
+graph.addEdge(DirectedWeightedEdge(-3, verticeE, verticeD))
+
+BellmannFord<String>().shortestPath(graph, verticeA, verticeE)
+BellmannFord<String>().shortestPath(graph, verticeA, verticeB)
+BellmannFord<String>().shortestPath(graph, verticeA, verticeC)
+BellmannFord<String>().shortestPath(graph, verticeE, verticeC)

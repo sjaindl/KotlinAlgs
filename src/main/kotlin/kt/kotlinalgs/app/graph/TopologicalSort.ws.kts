@@ -1,122 +1,118 @@
-package kt.kotlinalgs.app.graph
+package com.sjaindl.kotlinalgsandroid.graph
 
 import java.util.*
 
-println("Test")
+public class TopologicalSort {
+    /*
+    we have 2 queues. determines a possible order to e.g. produce dependent parts
+     */
 
-data class Vertice<T>(
-    val value: T,
-    var incomingEdgeCount: Int = 0 // exclude from hash!!
-) {
-    override fun equals(other: Any?): Boolean {
-        return value == (other as? Vertice<T>)?.value
+    fun test() {
+        val vertice0 = Vertice(0)
+        val vertice1 = Vertice(1)
+        val vertice2 = Vertice(2)
+        val vertice3 = Vertice(3)
+        val vertice4 = Vertice(4)
+        val vertice5 = Vertice(5)
+        val vertices = listOf(
+            vertice0, vertice1, vertice2, vertice3, vertice4, vertice5
+        )
+
+// example from: https://www.geeksforgeeks.org/topological-sorting/
+        val graph = Graph(vertices)
+        graph.addEdge(vertice2, vertice3)
+        graph.addEdge(vertice3, vertice1)
+        graph.addEdge(vertice4, vertice1)
+        graph.addEdge(vertice4, vertice0)
+        graph.addEdge(vertice5, vertice0)
+        graph.addEdge(vertice5, vertice2)
+
+        graph.neighbours(vertice0)
+        graph.neighbours(vertice2)
+
+        graph.adjList.forEach {
+            println("${it.key}: ${it.value}")
+        }
+
+        println("graph1: " + graph.adjList.size)
+        val order = sort(graph)
+        println(order)
     }
 
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
-}
+    fun sort(graph: Graph): List<Int> {
+        println("count: ${graph.vertices.size}")
+        println("graph2: " + graph.adjList.size)
+        // 1. count inbounds
+        countInbounds(graph)
 
-class DirectedGraphWithAdjList<T>(val vertices: List<Vertice<T>> = emptyList()) {
-    val adjList: MutableMap<Vertice<T>, MutableList<Vertice<T>>> = mutableMapOf()
+        graph.adjList.forEach {
+            println("${it.key}: ${it.value}")
+        }
 
-    fun addEdge(from: Vertice<T>, to: Vertice<T>) {
-        val neighbours = adjList[from] ?: mutableListOf()
-        neighbours.add(to)
-        adjList[from] = neighbours
-    }
+        // 2. init queues
+        val processing = LinkedList<Vertice>()
+        val output = LinkedList<Int>()
 
-    fun neighbours(of: Vertice<T>): List<Vertice<T>> {
-        return adjList[of] ?: emptyList()
-    }
-}
-
-val vertice1 = Vertice(1)
-val vertice2 = Vertice(2)
-val vertice3 = Vertice(3)
-val vertice4 = Vertice(4)
-val vertice5 = Vertice(5)
-val vertice6 = Vertice(6)
-
-val graph = DirectedGraphWithAdjList<Int>(
-    vertices = listOf(
-        vertice1, vertice2, vertice3, vertice4, vertice5, vertice6
-    )
-)
-
-graph.addEdge(vertice1, vertice2)
-graph.addEdge(vertice1, vertice3)
-graph.addEdge(vertice2, vertice4)
-graph.addEdge(vertice2, vertice5)
-graph.addEdge(vertice5, vertice6)
-//graph.addEdge(vertice6, vertice1)
-/*
-    1 -> 3
-      -> 2 -> 4
-           -> 5 -> 6
-
-1. construct directed graph
-2. count incoming edges  (property at vertice class)
-3. put nodes with no incoming edges into queue
-4. while (!queue is empty):
-    pop
-    put on processed queue
-    reduce inc edge count for all neighbours, if 0 -> put on queue
-5. check processed queue count == nr. of vertices. If not -> cycle
- */
-
-val sort = GraphSort<Int>()
-sort.topologicalSort(graph)
-
-class GraphSort<T> {
-    // 1. construct directed graph
-    fun topologicalSort(graph: DirectedGraphWithAdjList<T>): Queue<Vertice<T>> {
-        // 2. count incoming edges  (property at vertice class)
         graph.vertices.forEach {
-            println("check $it")
-            graph.neighbours(it).forEach { neighbour ->
-                neighbour.incomingEdgeCount++
-                println("nb $neighbour")
+            if (it.inboundCount == 0) {
+                processing.addFirst(it)
             }
         }
 
-        // 3. put nodes with no incoming edges into queue
-        var processingQueue: Queue<Vertice<T>> = LinkedList<Vertice<T>>()
-        graph.vertices.forEach {
-            println("v $it count ${it.incomingEdgeCount}")
-            if (it.incomingEdgeCount == 0) processingQueue.add(it)
-        }
+        println(processing.size)
 
-        /*
-        4. while (!queue is empty):
-            pop
-            put on processed queue
-            reduce inc edge count for all neighbours, if 0 -> put on queue
-         */
+        // 3. process..
+        while (!processing.isEmpty()) {
+            val next = processing.removeLast()
+            output.addLast(next.value) // = add
 
-        var processedQueue: Queue<Vertice<T>> = LinkedList<Vertice<T>>()
-
-        println("processingQueue -> ${processingQueue.size}")
-
-        while (!processingQueue.isEmpty()) {
-            val next = processingQueue.poll()
-            processedQueue.add(next)
-
-            println("Processed: ${next.value}")
-
-            graph.vertices.forEach {
-                graph.neighbours(it).forEach {
-                    it.incomingEdgeCount--
-                    if (it.incomingEdgeCount == 0) processingQueue.add(it)
+            // update neighbors, put in processing new nodes with inbound 0
+            graph.neighbours(next).forEach {
+                it.inboundCount--
+                println(it.inboundCount)
+                if (it.inboundCount == 0) {
+                    processing.add(it)
                 }
             }
         }
 
-        // 5. check processed queue count == nr. of vertices. If not -> cycle
-        if (processedQueue.size != graph.vertices.size) {
-            println("Cycle!")
+        // 4. output
+        if (output.size != graph.vertices.size) {
+            // There's a cycle, no topological sort possible
+            return emptyList()
         }
 
-        return processedQueue
+        return output
+    }
+
+    private fun countInbounds(graph: Graph) {
+        graph.vertices.forEach {
+            println(graph.adjList.size)
+
+            graph.neighbours(it).forEach { neighbour ->
+                neighbour.inboundCount++
+            }
+        }
     }
 }
+
+public class Graph(val vertices: List<Vertice>) {
+    var adjList: MutableMap<Int, MutableList<Vertice>> = mutableMapOf()
+
+    fun addEdge(from: Vertice, to: Vertice) {
+        val list = adjList.getOrDefault(from.value, mutableListOf())
+        list.add(to)
+        adjList[from.value] = list
+    }
+
+    fun neighbours(vertice: Vertice): List<Vertice> {
+        return adjList.getOrDefault(vertice.value, listOf())
+    }
+}
+
+data class Vertice(
+    val value: Int,
+    var inboundCount: Int = 0
+)
+
+TopologicalSort().test()

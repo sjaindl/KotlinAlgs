@@ -1,81 +1,77 @@
-package kt.kotlinalgs.app.graph
+package com.sjaindl.kotlinalgsandroid.graph
 
-Solution().test()
+/*
+    HamiltonianCycle - Circular path through all vertices (0 -> N -> 0)
 
-data class DirectedWeightedGraphWithAdjMatrix(val matrix: Array<IntArray>)
+ */
 
-class Solution {
-    fun test() {
-        println("Test")
-
-        val graph = DirectedWeightedGraphWithAdjMatrix(
-            arrayOf(
-                intArrayOf(0, 1, 0, 1, 0),
-                intArrayOf(1, 0, 1, 1, 1),
-                intArrayOf(0, 1, 0, 0, 1),
-                intArrayOf(1, 1, 0, 0, 1),
-                intArrayOf(0, 1, 1, 1, 0)
-            )
-        )
-
-        val hs = HamiltonianCycle()
-        val path = hs.path(graph)
-        println(path)
-    }
-}
-
+//https://www.geeksforgeeks.org/hamiltonian-cycle-backtracking-6/
 class HamiltonianCycle {
-    // https://www.geeksforgeeks.org/hamiltonian-cycle-backtracking-6/
-    // worst case O(V * V!) .. but backtracking improves this naive algo much
-    fun path(graph: DirectedWeightedGraphWithAdjMatrix): List<Int>? {
-        // backtracking
-        if (graph.matrix.isEmpty()) return emptyList()
-        if (graph.matrix.size == 1) return listOf(0)
+    fun path(graph: Array<IntArray>): List<Int> {
+/*
+1. init path (size V)
+2. add v0
+3. for v1-n: check if valid (not already in path + adj to prev. vertice)
+4. if valid: add to path
+5. if all invalid: backtrack
 
-        val visited: MutableSet<Int> = mutableSetOf()
-        val builtPath: MutableList<Int> = mutableListOf()
+ */
+        if (graph.isEmpty() || graph[0].size != graph.size) return emptyList()
 
-        return pathRec(graph, builtPath, visited, 0)
+        val path: MutableList<Int> = mutableListOf()
+        path.add(0)
+
+        pathRecursive(graph, path, 0)
+        return path
     }
 
-    private fun pathRec(
-        graph: DirectedWeightedGraphWithAdjMatrix,
-        builtPath: MutableList<Int>,
-        visited: MutableSet<Int>,
-        current: Int
-    ): List<Int>? {
-        if (builtPath.size == graph.matrix.size) {
-            // BC
-            if (graph.matrix[current][0] == 0) return null
-
-            builtPath.add(0)
-            val result = builtPath.toList()
-            builtPath.removeAt(builtPath.lastIndex)
-
-            return result
+    private fun pathRecursive(
+        graph: Array<IntArray>,
+        path: MutableList<Int>,
+        lastVertice: Int
+    ): Boolean {
+        if (path.size == graph.size) {
+            if (graph[lastVertice][0] != 0) {
+                //found a hamiltonian cycle! include first node.
+                path.add(0)
+                return true
+            }
+            return false
         }
 
-        builtPath.add(current)
-        visited.add(current)
-
-        println(builtPath)
-
-        graph.matrix[current].forEach { neighbour ->
-            if (neighbour == current
-                || graph.matrix[current][neighbour] == 0
-                || visited.contains(neighbour)
-            ) return@forEach
-
-            println("check $current - $neighbour")
-
-            pathRec(graph, builtPath, visited, neighbour)?.let {
-                return it
+        for (vertice in 1 until graph.size) {
+            if (isValid(graph, path, lastVertice, vertice)) {
+                path.add(vertice)
+                if (pathRecursive(graph, path, vertice)) return true
+                path.remove(vertice)
             }
         }
 
-        builtPath.remove(current)
-        visited.remove(current)
-
-        return null
+        return false
     }
+
+    //valid (not already in path + adj to prev. vertice)
+    private fun isValid(
+        graph: Array<IntArray>,
+        path: MutableList<Int>,
+        lastVertice: Int,
+        vertice: Int
+    ): Boolean {
+        if (vertice == lastVertice || graph[lastVertice][vertice] == 0 || path.contains(vertice)) return false
+        return true
+    }
+}
+
+val graph = arrayOf(
+    intArrayOf(0, 1, 0, 1, 0),
+    intArrayOf(1, 0, 1, 1, 1),
+    intArrayOf(0, 1, 0, 0, 1),
+    intArrayOf(1, 1, 0, 0, 1),
+    intArrayOf(0, 1, 1, 1, 0)
+)
+
+val mst = HamiltonianCycle().path(graph)
+
+mst.forEach {
+    println("$it")
 }

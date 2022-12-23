@@ -1,166 +1,100 @@
-package kt.kotlinalgs.app.graph
+package com.sjaindl.kotlinalgsandroid.graph
 
 import java.util.*
 
-println("Test")
+/*
+    GraphMColoring - Color graph with max M colors possible?
+    Backtracking algo: O(m^V) time + O(V) space for recursion. In practice much faster.
+    Alternative: BFS in O(E+V)
+ */
 
-Solution().test()
+//https://www.geeksforgeeks.org/m-coloring-problem-backtracking-5/
+class GraphMColoringBacktrack {
+    fun color(graph: Array<IntArray>, maxColors: Int): IntArray? {
+        if (graph.isEmpty()) return IntArray(0)
 
-data class Vertice<T>(
-    val value: T,
-    var color: Int = -1
-) {
-    override fun equals(other: Any?): Boolean {
-        val oth = other as? Vertice<*> ?: return false
-        return oth.value == value
+        val colors = IntArray(graph.size) { -1 }
+        return color(graph, 0, colors, maxColors)
     }
 
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
-}
-
-class DirectedGraphWithAdjList<T>(val vertices: List<Vertice<T>> = emptyList()) {
-    private val adjList: MutableMap<Vertice<T>, MutableList<Vertice<T>>> = mutableMapOf()
-
-    fun addEdge(from: Vertice<T>, to: Vertice<T>) {
-        val neighbours = adjList[from] ?: mutableListOf()
-        neighbours.add(to)
-        adjList[from] = neighbours
-    }
-
-    fun neighbours(of: Vertice<T>): List<Vertice<T>> {
-        return adjList[of] ?: emptyList()
-    }
-}
-
-// https://www.geeksforgeeks.org/m-coloring-problem-backtracking-5/
-// TODO! Somehow bipartite graph algo landed here instead of backtracking + BFS..
-
-class BipartiteChecker<T> {
-    fun isBipartiteBFS(graph: DirectedGraphWithAdjList<T>): Boolean {
-        if (graph.vertices.size <= 2) return true
-
-        graph.vertices.forEach {
-            it.color = -1
+    private fun color(
+        graph: Array<IntArray>,
+        index: Int,
+        colors: IntArray,
+        maxColors: Int
+    ): IntArray? {
+        if (index == graph.size) {
+            return colors
         }
 
-        graph.vertices.forEach {
-            if (it.color != -1) return@forEach
+        for (color in 0 until maxColors) {
+            if (isSafe(graph, index, colors, color)) {
+                colors[index] = color
 
-            if (!isBipartiteBFSUtil(graph, it)) return false
+                color(graph, index + 1, colors, maxColors)?.let {
+                    return it
+                }
+
+                colors[index] = -1
+            }
         }
 
+        return null
+    }
+
+    private fun isSafe(graph: Array<IntArray>, index: Int, colors: IntArray, color: Int): Boolean {
+        for (neighbourIndex in graph.indices) {
+            //check if there's an edge with already same color
+            if (graph[index][neighbourIndex] != 0 && colors[neighbourIndex] == color) return false
+        }
         return true
     }
+}
 
-    fun isBipartiteBFSUtil(graph: DirectedGraphWithAdjList<T>, vertice: Vertice<T>): Boolean {
-        val queue = LinkedList<Vertice<T>>()
-        vertice.color = 0
-        queue.add(vertice)
+class GraphColoringBFS {
+    fun color(graph: Array<IntArray>, maxColors: Int): IntArray? {
+        if (graph.isEmpty()) return null
+
+        val visited: MutableSet<Int> = mutableSetOf()
+        val queue = LinkedList<Int>()
+        val colors = IntArray(graph.size) { 0 }
+        queue.add(0)
 
         while (!queue.isEmpty()) {
-            val cur = queue.remove()
-            graph.neighbours(cur).forEach {
-                if (it.color == cur.color) return false
-                else if (it.color == -1) {
-                    it.color = if (cur.color == 0) 1 else 0
-                    queue.add(it)
+            val next = queue.removeLast()
+            for (neighbour in graph.indices) {
+                if (next != neighbour && graph[next][neighbour] != 0) {
+                    if (colors[next] == colors[neighbour]) {
+                        colors[neighbour]++
+                        if (colors[neighbour] >= maxColors) return null
+                    }
+                    if (!visited.contains(neighbour)) {
+                        visited.add(neighbour)
+                        queue.add(neighbour)
+                    }
                 }
             }
         }
 
-        return true
-    }
-
-    fun isBipartiteDFS(graph: DirectedGraphWithAdjList<T>): Boolean {
-        if (graph.vertices.size <= 2) return true
-
-        graph.vertices.forEach {
-            it.color = -1
-        }
-
-        graph.vertices.forEach {
-            if (it.color == -1 && !isBipartiteDFSRec(graph, it, -1)) return false
-        }
-
-        return true
-    }
-
-    private fun isBipartiteDFSRec(
-        graph: DirectedGraphWithAdjList<T>,
-        vertice: Vertice<T>,
-        prevColor: Int
-    ): Boolean {
-        vertice.color = when (prevColor) {
-            -1 -> 0
-            0 -> 1
-            else -> 0
-        }
-
-        graph.neighbours(vertice).forEach {
-            if (it.color == vertice.color) return false
-            else if (it.color == -1) {
-                if (!isBipartiteDFSRec(graph, it, vertice.color)) return false
-            }
-        }
-
-        return true
+        return colors
     }
 }
 
-class Solution {
-    fun test() {
-        val vertice1 = Vertice(1)
-        val vertice2 = Vertice(2)
-        val vertice3 = Vertice(3)
-        val vertice4 = Vertice(4)
-        val vertice5 = Vertice(5)
-        val vertice6 = Vertice(6)
+val graph: Array<IntArray> = arrayOf(
+    intArrayOf(0, 1, 1, 1),
+    intArrayOf(1, 0, 1, 0),
+    intArrayOf(1, 1, 0, 1),
+    intArrayOf(1, 0, 1, 0)
+)
 
-        val graph = DirectedGraphWithAdjList<Int>(
-            vertices = listOf(
-                vertice1, vertice2, vertice3, vertice4, vertice5, vertice6
-            )
-        )
+val colors = GraphMColoringBacktrack().color(graph, 3)
 
-        graph.addEdge(vertice1, vertice2)
-        graph.addEdge(vertice2, vertice3)
-        graph.addEdge(vertice3, vertice4)
-        graph.addEdge(vertice4, vertice5)
-        graph.addEdge(vertice5, vertice6)
-        graph.addEdge(vertice6, vertice1)
+colors?.forEach {
+    println("$it")
+}
 
-        // 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 1 .. (cycle)
+val colorsBFS = GraphColoringBFS().color(graph, 3)
 
-        val bipartiteChecker = BipartiteChecker<Int>()
-        println(bipartiteChecker.isBipartiteDFS(graph))
-        println(bipartiteChecker.isBipartiteBFS(graph))
-
-        // --------------------------------------------------
-
-        val vertice1_2 = Vertice(1)
-        val vertice2_2 = Vertice(2)
-        val vertice3_2 = Vertice(3)
-        val vertice4_2 = Vertice(4)
-        val vertice5_2 = Vertice(5)
-
-        val graph_2 = DirectedGraphWithAdjList<Int>(
-            vertices = listOf(
-                vertice1_2, vertice2_2, vertice3_2, vertice4_2, vertice5_2
-            )
-        )
-
-        graph_2.addEdge(vertice1_2, vertice2_2)
-        graph_2.addEdge(vertice2_2, vertice3_2)
-        graph_2.addEdge(vertice3_2, vertice4_2)
-        graph_2.addEdge(vertice4_2, vertice5_2)
-        graph_2.addEdge(vertice5_2, vertice1_2)
-
-        // 1 -> 2 -> 3 -> 4 -> 5 -> 1 .. (cycle)
-
-        val bipartiteChecker2 = BipartiteChecker<Int>()
-        println(bipartiteChecker2.isBipartiteDFS(graph_2))
-        println(bipartiteChecker2.isBipartiteBFS(graph_2))
-    }
+colorsBFS?.forEach {
+    println("$it")
 }

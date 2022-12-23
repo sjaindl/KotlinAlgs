@@ -1,124 +1,96 @@
-package kt.kotlinalgs.app.graph
+package com.sjaindl.kotlinalgsandroid.graph
 
-import java.util.*
+/*
+    GraphColoring - Color graph with min d(egree max)+1 colors.
+    Worst Case runtime: O(V^2 + E) - if fully connected graph?
+ */
 
-println("Test")
+//https://www.geeksforgeeks.org/graph-coloring-set-2-greedy-algorithm/
+class GraphColoring<T> {
+    fun color(graph: Graph<T>) {
+        if (graph.vertices.isEmpty()) return
+        //assign first color to vertex 0
+        graph.vertices[0].color = 0
 
-Solution().test()
+        //color vertices with lowest color of adjacent ones
+        for (verticeIndex in 1 until graph.vertices.size) {
+            val vertice = graph.vertices[verticeIndex]
+            val colorSet: MutableSet<Int> = mutableSetOf()
+            for (neighbour in graph.neighbours(vertice)) {
+                if (neighbour.color > -1) colorSet.add(neighbour.color)
+            }
+            
+            var minColor = -1
+            val sorted = colorSet.sorted()
+            println("${vertice.id}: $sorted")
 
-class Solution {
-    fun test() {
-        //https://www.geeksforgeeks.org/kruskals-minimum-spanning-tree-algorithm-greedy-algo-2/
-        val vertice0 = Vertice(0)
-        val vertice1 = Vertice(1)
-        val vertice2 = Vertice(2)
-        val vertice3 = Vertice(3)
-        val vertice4 = Vertice(4)
+            for (color in sorted) {
+                if (color > minColor + 1) {
+                    break
+                } else {
+                    minColor++
+                }
+            }
 
-        val graph = UndirectedGraph(
-            listOf(
-                vertice0, vertice1, vertice2, vertice3, vertice4
-            )
-        )
-
-        graph.addEdge(vertice0, vertice1)
-        graph.addEdge(vertice0, vertice2)
-        graph.addEdge(vertice1, vertice2)
-        graph.addEdge(vertice1, vertice3)
-        graph.addEdge(vertice2, vertice3)
-        graph.addEdge(vertice3, vertice4)
-
-        val coloring = GraphColoring()
-        println(coloring.colorGraph(graph))
-
-        val vertice0_2 = Vertice(0)
-        val vertice1_2 = Vertice(1)
-        val vertice2_2 = Vertice(2)
-        val vertice3_2 = Vertice(3)
-        val vertice4_2 = Vertice(4)
-
-        val graph2 = UndirectedGraph(
-            listOf(
-                vertice0_2, vertice1_2, vertice2_2, vertice3_2, vertice4_2
-            )
-        )
-
-        graph2.addEdge(vertice0_2, vertice1_2)
-        graph2.addEdge(vertice0_2, vertice2_2)
-        graph2.addEdge(vertice1_2, vertice2_2)
-        graph2.addEdge(vertice1_2, vertice4_2)
-        graph2.addEdge(vertice2_2, vertice4_2)
-        graph2.addEdge(vertice3_2, vertice4_2)
-
-        println(coloring.colorGraph(graph2))
+            vertice.color = minColor + 1
+        }
     }
 }
 
-data class Vertice(val value: Int, var color: Int = -1)
+data class Vertice<T>(
+    val id: T,
+    var color: Int = -1
+)
 
-data class UndirectedGraph(val vertices: List<Vertice>) {
-    var adjList: MutableMap<Vertice, MutableList<Vertice>> = mutableMapOf()
+data class Edge<T>(
+    val from: Vertice<T>,
+    val to: Vertice<T>
+)
 
-    fun addEdge(first: Vertice, second: Vertice) {
-        val firstList = adjList.getOrDefault(first, mutableListOf())
-        firstList.add(second)
-        adjList[first] = firstList
+class Graph<T>(val vertices: List<Vertice<T>>) {
+    var edges: MutableList<Edge<T>> = mutableListOf()
+    private var adjList: MutableMap<T, MutableList<Vertice<T>>> = mutableMapOf()
 
-        val secondList = adjList.getOrDefault(second, mutableListOf())
-        secondList.add(first)
-        adjList[second] = secondList
+    fun addEdge(from: Vertice<T>, to: Vertice<T>) {
+        val list = adjList.getOrDefault(from.id, mutableListOf())
+        list.add(to)
+        adjList[from.id] = list
+
+        val list2 = adjList.getOrDefault(to.id, mutableListOf())
+        list2.add(from)
+        adjList[to.id] = list2
+    }
+
+    fun neighbours(vertice: Vertice<T>): List<Vertice<T>> {
+        return adjList[vertice.id] ?: emptyList()
     }
 }
 
-// https://www.geeksforgeeks.org/graph-coloring-set-2-greedy-algorithm/
-class GraphColoring {
-    fun colorGraph(graph: UndirectedGraph): Int {
-        graph.vertices.forEach {
-            it.color = -1
-        }
-        /*
-            for each vertice:
-                find min color used by checking all neighbours
-                (putting adj colors > -1 in TreeSet, and find first gap color)
-                color vertice with found color
-                update numColors with Math.max(numColors, curColor)
+val vertices = listOf(
+    Vertice(0),
+    Vertice(1),
+    Vertice(2),
+    Vertice(3),
+    Vertice(4)
+)
 
-            return numColors + 1 (includes color 0)
-         */
-        if (graph.vertices.isEmpty()) return 0
+val graph = Graph(vertices)
 
-        var numColors = 0 //1
+graph.addEdge(vertices[0], vertices[1])
+graph.addEdge(vertices[0], vertices[2])
+graph.addEdge(vertices[1], vertices[0])
+graph.addEdge(vertices[1], vertices[2])
+graph.addEdge(vertices[1], vertices[3])
+graph.addEdge(vertices[2], vertices[0])
+graph.addEdge(vertices[2], vertices[1])
+graph.addEdge(vertices[2], vertices[3])
+graph.addEdge(vertices[3], vertices[1])
+graph.addEdge(vertices[3], vertices[2])
+graph.addEdge(vertices[3], vertices[4])
+graph.addEdge(vertices[4], vertices[3])
 
-        // [0, -1, 1, -1, -1]
-        graph.vertices.forEach { //O(V)
-            val minColor = findMinColor(graph, it) // O(V+E)
-            it.color = minColor
-            println("Vertice ${it.value} -> ${it.color}")
-            numColors = Math.max(numColors, minColor + 1)
-        }
+GraphColoring<Int>().color(graph)
 
-        // total: O(V^2 + E)
-        return numColors
-    }
-
-    private fun findMinColor(graph: UndirectedGraph, vertice: Vertice): Int {
-        var usedColors = TreeSet<Int>()
-
-        graph.adjList[vertice]?.forEach { //O(E)
-            if (it.color != -1) usedColors.add(it.color)
-        }
-
-        println(vertice)
-        println(usedColors)
-
-        if (usedColors.isEmpty()) return 0
-        var lastColor = -1
-
-        usedColors.forEach { //O(V)
-            if (it != lastColor + 1) return lastColor + 1
-            lastColor = it
-        }
-
-        return usedColors.size
-    }
+graph.vertices.forEach {
+    println("${it.id}: ${it.color}")
 }

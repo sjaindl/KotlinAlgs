@@ -1,71 +1,60 @@
-package kt.kotlinalgs.app.graph
-
-println("Test")
+package com.sjaindl.kotlinalgsandroid.graph
 
 /*
-    https://www.geeksforgeeks.org/floyd-warshall-algorithm-dp-16/
-
-    relax all intermediate nodes
-    O(V^3)
-
-    1. create adj matrix directed weighted graph
-    2. for each intermediate in 0 until V
-        for each start in 0 until V
-            for each end in 0 until V
-                relax if matrix[i][k] + matrix[k][j] < matrix[i][j]
+    FloydWarshall
+    shortest paths between all nodes
+    Using array: O(V^3)
  */
 
-data class DirectedWeightedGraphWithAdjMatrix(val matrix: Array<IntArray>)
+//https://www.geeksforgeeks.org/floyd-warshall-algorithm-dp-16/
+class FloydWarshall<T> {
+    fun shortestPath(graph: Array<IntArray>): Array<IntArray> {
+        val size = graph.size
+        val shortestPaths: Array<IntArray> = Array(size) { IntArray(size) }
 
-class FloydWarshall() {
-    fun allShortestPaths(graph: DirectedWeightedGraphWithAdjMatrix): Array<IntArray> {
-        val matrix = graph.matrix.copyOf()
-        val size = matrix.size
+        for (front in 0 until size) {
+            for (back in 0 until size) {
+                shortestPaths[front][back] = graph[front][back]
+            }
+        }
 
-        for (start in 0 until size) {
-            for (intermediate in 0 until size) {
-                for (end in 0 until size) {
-                    if (matrix[start][intermediate] != Int.MAX_VALUE && matrix[intermediate][end] != Int.MAX_VALUE) {
-                        val curPathCost = matrix[start][intermediate] + matrix[intermediate][end]
-                        if (curPathCost < matrix[start][end]) {
-                            matrix[start][end] = curPathCost
-                        }
+        for (intermediate in 0 until size) {
+            for (front in 0 until size) {
+                for (back in 0 until size) {
+                    val cur = shortestPaths[front][intermediate] + shortestPaths[intermediate][back]
+                    if (cur < shortestPaths[front][back]) {
+                        shortestPaths[front][back] = cur
                     }
                 }
             }
         }
 
-        return matrix
+        printSolution(shortestPaths)
+
+        return shortestPaths
     }
 
-    fun printShortestPath(matrix: Array<IntArray>, from: Int, to: Int) {
-        println("$from -> $to: Dist ${matrix[from][to]}")
+    fun printSolution(dist: Array<IntArray>) {
+        println(
+            "The following matrix shows the shortest " +
+                    "distances between every pair of vertices"
+        )
+        for (i in 0 until dist.size) {
+            for (j in 0 until dist.size) {
+                print(dist[i][j].toString() + "   ")
+            }
+            println()
+        }
     }
 }
 
-val INF = Int.MAX_VALUE
+val INF = 999999 // possible int overflow if set to Int.MAX_VALUE!
 
-val graph = DirectedWeightedGraphWithAdjMatrix(
-    arrayOf(
-        intArrayOf(0, 5, INF, 10),
-        intArrayOf(INF, 0, 3, INF),
-        intArrayOf(INF, INF, 0, 1),
-        intArrayOf(INF, INF, INF, 0)
-    )
+var graph = arrayOf(
+    intArrayOf(0, 5, INF, 10),
+    intArrayOf(INF, 0, 3, INF),
+    intArrayOf(INF, INF, 0, 1),
+    intArrayOf(INF, INF, INF, 0)
 )
 
-val floyd = FloydWarshall()
-floyd.allShortestPaths(graph)
-
-floyd.printShortestPath(graph.matrix, 0, 1)
-floyd.printShortestPath(graph.matrix, 0, 2)
-floyd.printShortestPath(graph.matrix, 0, 3)
-floyd.printShortestPath(graph.matrix, 1, 0)
-floyd.printShortestPath(graph.matrix, 1, 2)
-floyd.printShortestPath(graph.matrix, 1, 3)
-floyd.printShortestPath(graph.matrix, 2, 0)
-floyd.printShortestPath(graph.matrix, 2, 1)
-floyd.printShortestPath(graph.matrix, 2, 2)
-floyd.printShortestPath(graph.matrix, 3, 0)
-floyd.printShortestPath(graph.matrix, 3, 1)
-floyd.printShortestPath(graph.matrix, 3, 2)
+val result = FloydWarshall<String>().shortestPath(graph)
